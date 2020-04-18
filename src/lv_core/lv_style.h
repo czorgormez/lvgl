@@ -208,7 +208,43 @@ typedef uint16_t lv_style_property_t;
 typedef uint16_t lv_style_state_t;
 
 typedef struct {
+   uint32_t opa_scale:1;
+   uint32_t clip_corner:1;
+   uint32_t transform_width:1;
+   uint32_t transform_height:1;
+   uint32_t pad_left:1;
+   uint32_t pad_right:1;
+   uint32_t pad_top:1;
+   uint32_t pad_bottom:1;
+   uint32_t margin_left:1;
+   uint32_t margin_right:1;
+   uint32_t margin_top:1;
+   uint32_t margin_bottom:1;
+   uint32_t bg_opa:1;
+   uint32_t bg_blend_mode:1;
+   uint32_t bg_grad_dir:1;
+   uint32_t border_width:1;
+   uint32_t border_blend_mode:1;
+   uint32_t border_opa:1;
+   uint32_t border_side:1;
+   uint32_t outline_width:1;
+   uint32_t shadow_width:1;
+   uint32_t pattern_image:1;
+   uint32_t value_str:1;
+   uint32_t text_opa:1;
+   uint32_t text_letter_space:1;
+   uint32_t text_line_space:1;
+   uint32_t text_decor:1;
+   uint32_t text_blend_mode:1;
+   uint32_t text_font:1;
+   uint32_t image_opa:1;
+   uint32_t image_recolor_opa:1;
+   uint32_t image_blend_mode:1;
+}_lv_style_cache_t;
+
+typedef struct {
     uint8_t * map;
+    _lv_style_cache_t cache;
 #if LV_USE_ASSERT_STYLE
     uint32_t sentinel;
 #endif

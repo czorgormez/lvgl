@@ -81,7 +81,7 @@ void lv_style_copy(lv_style_t * style_dest, const lv_style_t * style_src)
     if(style_src->map == NULL) return;
 
     uint16_t size = lv_style_get_mem_size(style_src);
-
+    style_dest->cache = style_src->cache;
     style_dest->map = lv_mem_alloc(size);
     memcpy(style_dest->map, style_src->map, size);
 }
@@ -323,6 +323,7 @@ void lv_style_reset(lv_style_t * style)
 
     lv_mem_free(style->map);
     style->map = NULL;
+    memset(&style->cache, 0x00, sizeof(style->cache));
 }
 
 /**
@@ -394,6 +395,63 @@ void _lv_style_set_int(lv_style_t * style, lv_style_property_t prop, lv_style_in
     memcpy(style->map + size - new_prop_size - end_mark_size, &prop, sizeof(lv_style_property_t));
     memcpy(style->map + size - sizeof(lv_style_int_t) - end_mark_size, &value, sizeof(lv_style_int_t));
     memcpy(style->map + size - end_mark_size, &end_mark, sizeof(end_mark));
+
+
+    switch(prop & 0xff) {
+    case LV_STYLE_CLIP_CORNER:
+        style->cache.opa_scale = 1; break;
+    case LV_STYLE_TRANSFORM_WIDTH:
+        style->cache.transform_width = 1; break;
+    case LV_STYLE_TRANSFORM_HEIGHT:
+        style->cache.transform_height = 1; break;
+    case LV_STYLE_PAD_LEFT:
+        style->cache.pad_left = 1; break;
+    case LV_STYLE_PAD_RIGHT:
+        style->cache.pad_right = 1; break;
+    case LV_STYLE_PAD_TOP:
+        style->cache.pad_top = 1; break;
+    case LV_STYLE_PAD_BOTTOM:
+        style->cache.pad_bottom = 1; break;
+    case LV_STYLE_MARGIN_LEFT:
+        style->cache.margin_left = 1; break;
+    case LV_STYLE_MARGIN_RIGHT:
+        style->cache.margin_right = 1; break;
+    case LV_STYLE_MARGIN_TOP:
+        style->cache.margin_top = 1; break;
+    case LV_STYLE_MARGIN_BOTTOM:
+        style->cache.margin_bottom = 1; break;
+    case LV_STYLE_BG_BLEND_MODE:
+        style->cache.bg_blend_mode = 1; break;
+    case LV_STYLE_BG_GRAD_DIR:
+        style->cache.bg_grad_dir = 1; break;
+    case LV_STYLE_BORDER_WIDTH:
+        style->cache.border_width = 1; break;
+    case LV_STYLE_BORDER_BLEND_MODE:
+        style->cache.border_blend_mode = 1; break;
+    case LV_STYLE_BORDER_SIDE:
+        style->cache.border_side = 1; break;
+    case LV_STYLE_OUTLINE_WIDTH:
+        style->cache.outline_width = 1; break;
+    case LV_STYLE_SHADOW_WIDTH:
+        style->cache.shadow_width = 1; break;
+    case LV_STYLE_VALUE_STR:
+        style->cache.value_str = 1; break;
+    case LV_STYLE_TEXT_LETTER_SPACE:
+        style->cache.text_letter_space = 1; break;
+    case LV_STYLE_TEXT_LINE_SPACE:
+        style->cache.text_line_space = 1; break;
+    case LV_STYLE_TEXT_DECOR:
+        style->cache.text_decor = 1; break;
+    case LV_STYLE_TEXT_BLEND_MODE:
+        style->cache.text_blend_mode = 1; break;
+    case LV_STYLE_IMAGE_BLEND_MODE:
+        style->cache.image_blend_mode = 1; break;
+    case LV_STYLE_IMAGE_RECOLOR:
+        style->cache.image_recolor_opa = 1; break;
+    default:
+        break;
+    }
+
 }
 
 /**
@@ -488,6 +546,24 @@ void _lv_style_set_opa(lv_style_t * style, lv_style_property_t prop, lv_opa_t op
     memcpy(style->map + size - new_prop_size - end_mark_size, &prop, sizeof(lv_style_property_t));
     memcpy(style->map + size - sizeof(lv_opa_t) - end_mark_size, &opa, sizeof(lv_opa_t));
     memcpy(style->map + size - end_mark_size, &end_mark, sizeof(end_mark));
+
+
+    switch(prop & 0xff) {
+    case LV_STYLE_OPA_SCALE:
+        style->cache.opa_scale = 1; break;
+    case LV_STYLE_BG_OPA:
+        style->cache.bg_opa = 1; break;
+    case LV_STYLE_BORDER_OPA:
+        style->cache.border_opa = 1; break;
+    case LV_STYLE_TEXT_OPA:
+        style->cache.text_opa = 1; break;
+    case LV_STYLE_IMAGE_OPA:
+        style->cache.image_opa = 1; break;
+    case LV_STYLE_IMAGE_RECOLOR_OPA:
+        style->cache.image_recolor_opa = 1; break;
+    default:
+        break;
+    }
 }
 
 /**
@@ -535,6 +611,27 @@ void _lv_style_set_ptr(lv_style_t * style, lv_style_property_t prop, _lv_style_f
     memcpy(style->map + size - new_prop_size - end_mark_size, &prop, sizeof(lv_style_property_t));
     memcpy(style->map + size - sizeof(_lv_style_fptr_dptr_t) - end_mark_size, &p, sizeof(_lv_style_fptr_dptr_t));
     memcpy(style->map + size - end_mark_size, &end_mark, sizeof(end_mark));
+
+
+    switch(prop & 0xff) {
+    case LV_STYLE_PATTERN_IMAGE:
+        style->cache.pattern_image = 1; break;
+    case LV_STYLE_VALUE_STR:
+        style->cache.value_str = 1; break;
+    case LV_STYLE_TEXT_LETTER_SPACE:
+        style->cache.text_letter_space = 1; break;
+    case LV_STYLE_TEXT_LINE_SPACE:
+        style->cache.text_line_space = 1; break;
+    case LV_STYLE_TEXT_DECOR:
+        style->cache.text_decor = 1; break;
+    case LV_STYLE_TEXT_BLEND_MODE:
+        style->cache.text_blend_mode = 1; break;
+    case LV_STYLE_TEXT_FONT:
+        style->cache.text_font = 1; break;
+    default:
+        break;
+    }
+
 }
 
 /**
@@ -554,6 +651,87 @@ int16_t _lv_style_get_int(const lv_style_t * style, lv_style_property_t prop, vo
 
     if(style == NULL) return -1;
     if(style->map == NULL) return -1;
+
+    switch(prop & 0xff) {
+    case LV_STYLE_CLIP_CORNER:
+        if(!style->cache.opa_scale) return -1;
+        break;
+    case LV_STYLE_TRANSFORM_WIDTH:
+        if(!style->cache.transform_width) return -1;
+        break;
+    case LV_STYLE_TRANSFORM_HEIGHT:
+        if(!style->cache.transform_height) return -1;
+        break;
+    case LV_STYLE_PAD_LEFT:
+        if(!style->cache.pad_left) return -1;
+        break;
+    case LV_STYLE_PAD_RIGHT:
+        if(!style->cache.pad_right) return -1;
+        break;
+    case LV_STYLE_PAD_TOP:
+        if(!style->cache.pad_top) return -1;
+        break;
+    case LV_STYLE_PAD_BOTTOM:
+        if(!style->cache.pad_bottom) return -1;
+        break;
+    case LV_STYLE_MARGIN_LEFT:
+        if(!style->cache.margin_left) return -1;
+        break;
+    case LV_STYLE_MARGIN_RIGHT:
+        if(!style->cache.margin_right) return -1;
+        break;
+    case LV_STYLE_MARGIN_TOP:
+        if(!style->cache.margin_top) return -1;
+        break;
+    case LV_STYLE_MARGIN_BOTTOM:
+        if(!style->cache.margin_bottom) return -1;
+        break;
+    case LV_STYLE_BG_BLEND_MODE:
+        if(!style->cache.bg_blend_mode) return -1;
+        break;
+    case LV_STYLE_BG_GRAD_DIR:
+        if(!style->cache.bg_grad_dir) return -1;
+        break;
+    case LV_STYLE_BORDER_WIDTH:
+        if(!style->cache.border_width) return -1;
+        break;
+    case LV_STYLE_BORDER_BLEND_MODE:
+        if(!style->cache.border_blend_mode) return -1;
+        break;
+    case LV_STYLE_BORDER_SIDE:
+        if(!style->cache.border_side) return -1;
+        break;
+    case LV_STYLE_OUTLINE_WIDTH:
+        if(!style->cache.outline_width) return -1;
+        break;
+    case LV_STYLE_SHADOW_WIDTH:
+        if(!style->cache.shadow_width) return -1;
+        break;
+    case LV_STYLE_VALUE_STR:
+        if(!style->cache.value_str) return -1;
+        break;
+    case LV_STYLE_TEXT_LETTER_SPACE:
+        if(!style->cache.text_letter_space) return -1;
+        break;
+    case LV_STYLE_TEXT_LINE_SPACE:
+        if(!style->cache.text_line_space) return -1;
+        break;
+    case LV_STYLE_TEXT_DECOR:
+        if(!style->cache.text_decor) return -1;
+        break;
+    case LV_STYLE_TEXT_BLEND_MODE:
+        if(!style->cache.text_blend_mode) return -1;
+        break;
+    case LV_STYLE_IMAGE_BLEND_MODE:
+        if(!style->cache.image_blend_mode) return -1;
+        break;
+    case LV_STYLE_IMAGE_RECOLOR:
+        if(!style->cache.image_recolor_opa) return -1;
+        break;
+    default:
+        break;
+    }
+
     int32_t id = get_property_index(style, prop);
     if(id < 0) {
         return -1;
@@ -590,6 +768,30 @@ int16_t _lv_style_get_opa(const lv_style_t * style, lv_style_property_t prop, vo
 
     if(style == NULL) return -1;
     if(style->map == NULL) return -1;
+
+    switch(prop & 0xff) {
+    case LV_STYLE_OPA_SCALE:
+        if(!style->cache.opa_scale) return -1;
+        break;
+    case LV_STYLE_BG_OPA:
+        if(!style->cache.bg_opa ) return -1;
+        break;
+    case LV_STYLE_BORDER_OPA:
+        if(!style->cache.border_opa) return -1;
+        break;
+    case LV_STYLE_TEXT_OPA:
+        if(!style->cache.text_opa) return -1;
+        break;
+    case LV_STYLE_IMAGE_OPA:
+        if(!style->cache.image_opa) return -1;
+        break;
+    case LV_STYLE_IMAGE_RECOLOR_OPA:
+        if(!style->cache.image_recolor_opa) return -1;
+        break;
+    default:
+        break;
+    }
+
     int32_t id = get_property_index(style, prop);
     if(id < 0) {
         return -1;
@@ -658,6 +860,34 @@ int16_t _lv_style_get_ptr(const lv_style_t * style, lv_style_property_t prop, vo
     _lv_style_fptr_dptr_t * res = (_lv_style_fptr_dptr_t *)v_res;
     if(style == NULL) return -1;
     if(style->map == NULL) return -1;
+
+
+    switch(prop & 0xff) {
+    case LV_STYLE_PATTERN_IMAGE:
+        if(!style->cache.pattern_image) return -1;
+        break;
+    case LV_STYLE_VALUE_STR:
+        if(!style->cache.value_str) return -1;
+        break;
+    case LV_STYLE_TEXT_LETTER_SPACE:
+        if(!style->cache.text_letter_space) return -1;
+        break;
+    case LV_STYLE_TEXT_LINE_SPACE:
+        if(!style->cache.text_line_space) return -1;
+        break;
+    case LV_STYLE_TEXT_DECOR:
+        if(!style->cache.text_decor) return -1;
+        break;
+    case LV_STYLE_TEXT_BLEND_MODE:
+        if(!style->cache.text_blend_mode) return -1;
+        break;
+    case LV_STYLE_TEXT_FONT:
+        if(!style->cache.text_font) return -1;
+        break;
+    default:
+        break;
+    }
+
     int32_t id = get_property_index(style, prop);
     if(id < 0) {
         return -1;
@@ -1020,7 +1250,6 @@ lv_res_t lv_style_list_get_ptr(lv_style_list_t * list, lv_style_property_t prop,
  */
 static inline int32_t get_property_index(const lv_style_t * style, lv_style_property_t prop)
 {
-
     LV_ASSERT_STYLE(style);
 
     if(style->map == NULL) return -1;
